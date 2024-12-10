@@ -12,40 +12,77 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model User {
-  id        Int        @id @default(autoincrement())
-  auth0Id   String     @unique
+  id        Int      @id @default(autoincrement())
+  auth0Id   String?  @unique
   name      String
   lastName  String
-  email     String     @unique
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  email     String   @unique
+  role      String   @default("customer")
+  phone     String?
+  address   String?
+  events    Event[] // Relación como organizador
+  orders    Orders[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Event {
-  id          Int        @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   date        DateTime
   location    String
   description String
+  category    String
+  imageUrl    String?
+  organizerId Int
+  organizer   User     @relation(fields: [organizerId], references: [id])
+  tickets     Ticket[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model Ticket {
-  id           Int        @id @default(autoincrement())
-  eventId      Int
-  price        Int
-  type         String
-  availability Boolean 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          Int           @id @default(autoincrement())
+  eventId     Int
+  event       Event         @relation(fields: [eventId], references: [id])
+  price       Int
+  type        String
+  status      String    @default("available") // Values: "available", "reserved", "sold"
+  stock       Int
+  description String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  OrderTicket OrderTicket[]
 }
 
 model Orders {
-  id           Int        @id @default(autoincrement())
-  userId       Int
-  ticketId     Int
-  orderDate    DateTime 
-  totalAmount  Int
+  id            Int           @id @default(autoincrement())
+  userId        Int
+  user          User          @relation(fields: [userId], references: [id])
+  status        String        @default("pending")
+  paymentMethod String?
+  orderDate     DateTime
+  totalAmount   Int
+  tickets       OrderTicket[]
+  Payment       Payment[]
+}
+
+model OrderTicket {
+  id       Int    @id @default(autoincrement())
+  orderId  Int
+  ticketId Int
+  quantity Int
+  order    Orders @relation(fields: [orderId], references: [id])
+  ticket   Ticket @relation(fields: [ticketId], references: [id])
+}
+
+model Payment {
+  id          Int      @id @default(autoincrement())
+  orderId     Int
+  amount      Int
+  status      String
+  paymentDate DateTime @default(now())
+  order       Orders   @relation(fields: [orderId], references: [id])
 }

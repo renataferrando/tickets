@@ -8,16 +8,16 @@ interface Params {
 
 export async function GET(req: Request, { params }: Params) {
   try {
-    const note = await prisma.user.findFirst({
+    const event = await prisma.event.findFirst({
       where: {
         id: Number(params.id),
       },
     });
 
-    if (!note)
-      return NextResponse.json({ message: "Note not found" }, { status: 404 });
+    if (!event)
+      return NextResponse.json({ message: "Event not found" }, { status: 404 });
 
-    return NextResponse.json(note);
+    return NextResponse.json(event);
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json(
@@ -36,32 +36,32 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   const { id } = params;
   const body = await req.json();
 
-  await prisma.user.update({
+  await prisma.event.update({
     where: {
       id: Number(id),
     },
     data: body,
   });
-  return NextResponse.json({ message: "User updated " });
+  return NextResponse.json({ message: "Event updated " });
 }
 
 export async function DELETE(req: NextRequest, { params }: Params) {
   try {
-    const deleteUser = await prisma.user.delete({
+    const deleteEvent = await prisma.event.delete({
       where: {
         id: Number(params.id),
       },
     });
-    if (!deleteUser)
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    if (!deleteEvent)
+      return NextResponse.json({ message: "Event not found" }, { status: 404 });
 
-    return NextResponse.json(deleteUser);
+    return NextResponse.json(deleteEvent);
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2025") {
         return NextResponse.json(
           {
-            message: "Note not found",
+            message: "Event not found",
           },
           {
             status: 404,
