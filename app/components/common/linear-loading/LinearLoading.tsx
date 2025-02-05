@@ -5,6 +5,12 @@ import {
   LinearProgress,
   LinearProgressProps,
 } from "@mui/material";
+import classNames from "classnames";
+
+
+interface Props {
+  className?: string
+}
 
 function LinearProgressWithLabel(
   props: LinearProgressProps & { value: number }
@@ -29,8 +35,9 @@ function LinearProgressWithLabel(
   );
 }
 
-const LinearLoading = () => {
+const LinearLoading = ({ className }: Props) => {
   const [progress, setProgress] = React.useState(10);
+    const classes = classNames(className, "w-full h-[100vh] flex items-center justify-center");
 
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -43,7 +50,7 @@ const LinearLoading = () => {
     };
   }, []);
   return (
-    <div className="w-full h-[100vh] flex items-center justify-center">
+    <div className={classes}>
       <LinearProgressWithLabel value={progress} />
     </div>
   );

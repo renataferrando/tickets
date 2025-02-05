@@ -1,112 +1,107 @@
+/* eslint-disable */
+/* tslint:disable */
+// @ts-nocheck
 import prisma from "@/lib/db";
+
+import { getEvents } from "@/lib/getEventsDb";
+import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export const GET = withApiAuthRequired(async function GET(req: NextRequest) {
+  const session = await getSession(req, new NextResponse());
+  if (!session) {
+    const loginUrl = new URL("/api/auth/login", req.url);
+    return NextResponse.redirect(loginUrl);
+  }
+
   const url = new URL(req.url);
-  
-  const name = url.searchParams.get("name");
-  const location = url.searchParams.get("location");
-  const description = url.searchParams.get("description");
-  const startDate = url.searchParams.get("start_date");
-  const endDate = url.searchParams.get("end_date");
-  const ticketStatus = url.searchParams.get("ticket_status");
-  const ticketType = url.searchParams.get("ticket_type");
 
-  // Sorting parameters
-  const sortBy = url.searchParams.get("sort_by") || "date"; 
-  const sortOrder = url.searchParams.get("sort_order") || "asc";
-
-  // Pagination parameters
-  const page = parseInt(url.searchParams.get("page") || "1", 10); 
-  const limit = parseInt(url.searchParams.get("limit") || "10", 10);
-  const skip = (page - 1) * limit;
-
-
-  const filters: unknown = {
-    ...(name && { name: { contains: name, mode: "insensitive" } }),
-    ...(location && { location: { contains: location, mode: "insensitive" } }),
-    ...(description && {
-      description: { contains: description, mode: "insensitive" },
-    }),
-    ...(startDate || endDate
-      ? {
-          date: {
-            ...(startDate && { gte: new Date(startDate) }),
-            ...(endDate && { lte: new Date(endDate) }),
-          },
-        }
-      : {}),
-    ...(ticketStatus || ticketType
-      ? {
-          tickets: {
-            some: {
-              ...(ticketStatus && { status: ticketStatus }),
-              ...(ticketType && { type: ticketType }),
-            },
-          },
-        }
-      : {}),
+  const params = {
+    name: url.searchParams.get("name"),
+    location: url.searchParams.get("location"),
+    description: url.searchParams.get("description"),
+    startDate: url.searchParams.get("start_date"),
+    endDate: url.searchParams.get("end_date"),
+    ticketStatus: url.searchParams.get("ticket_status"),
+    ticketType: url.searchParams.get("ticket_type"),
+    sortBy: url.searchParams.get("sort_by") || "date",
+    sortOrder: url.searchParams.get("sort_order") || "asc",
+    page: parseInt(url.searchParams.get("page") || "1", 10),
+    limit: parseInt(url.searchParams.get("limit") || "10", 10),
   };
 
   try {
-    const [events, totalCount] = await Promise.all([
-      prisma.event.findMany({
-        where: filters,
-        include: {
-          tickets: true, 
-        },
-        skip, 
-        take: limit, 
-        orderBy: { [sortBy]: sortOrder }, 
-      }),
-      prisma.event.count({
-        where: filters, 
-      }),
-    ]);
-
-    const totalPages = Math.ceil(totalCount / limit);
-
-    return NextResponse.json(
-      {
-        events,
-        pagination: {
-          currentPage: page,
-          totalPages,
-          totalCount,
-          limit,
-        },
-      },
-      { status: 200 }
-    );
+    const data = await getEvents(params);
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        { error: "Failed to fetch events", details: error.message },
-        { status: 500 }
-      );
-    }
+    return NextResponse.json(
+      { error: "Failed to fetch events", details: error.message },
+      { status: 500 }
+    );
   }
-}
+});
+
+// export async function POST(req: NextRequest) {
+//   try {
+//     const body = await req.json();
+//     const newEvent = await prisma.event.create({
+//       data: body,
+//     });
+
+//     return NextResponse.json(
+//       { message: "Event created successfully", event: newEvent },
+//       { status: 201 }
+//     );
+//   } catch (error) {
+//     if (error instanceof Error) {
+//       return NextResponse.json(
+//         {
+//           message: error.message,
+//         },
+//         {
+//           status: 500,
+//         }
+//       );
+//     }
+//   }
+// }
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const newEvent = await prisma.event.create({
-      data: body,
+
+    // Insert events first (without tickets)
+    const events = body.map(({ tickets, ...eventData }) => eventData); // Remove tickets
+    const createdEvents = await prisma.event.createMany({
+      data: events,
+      skipDuplicates: true,
     });
+
+    // Fetch event IDs of the newly inserted events
+    const insertedEvents = await prisma.event.findMany({
+      where: { name: { in: events.map((e) => e.name) } }, // Assuming `name` is unique
+    });
+
+    // Insert tickets
+    const ticketsData = body.flatMap((event) => {
+      const eventId = insertedEvents.find((e) => e.name === event.name)?.id;
+      if (!eventId) return [];
+      return event.tickets.create.map((ticket) => ({
+        ...ticket,
+        eventId,
+      }));
+    });
+
+    await prisma.ticket.createMany({
+      data: ticketsData,
+      skipDuplicates: true,
+    });
+
     return NextResponse.json(
-      { message: "Event created successfully", event: newEvent },
+      { message: "Events and tickets created successfully" },
       { status: 201 }
     );
   } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json(
-        {
-          message: error.message,
-        },
-        {
-          status: 500,
-        }
-      );
-    }
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }

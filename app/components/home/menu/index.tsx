@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React, { useRef, useEffect } from "react";
 
 import { gsap } from "gsap";
+import Link from "next/link";
 
 const Menu: React.FC = () => {
   const gridRef = useRef<HTMLDivElement | null>(null);
@@ -108,32 +110,30 @@ const Menu: React.FC = () => {
     };
   }, []);
 
-
-
   return (
     <div className="flex flex-col max-w-[45%] gap-4">
-     
-      <hr
-        ref={hrRef}
-        className="border-none h-[0.5px] bg-white color-white opacity-70"
-        style={{ width: "0%" }} // Start with 0% width
-      />
-      <div
-        ref={triggerRef}
-        className="flex gap-6 justify-between px-6 cursor-pointer"
-      >
-        <p className="font-normal">Explore events</p>
+      <Link href="/events">
+        <hr
+          ref={hrRef}
+          className="border-none h-[0.5px] bg-white  color-white opacity-70"
+        />
         <div
-          ref={gridRef}
-          className="grid grid-cols-3 grid-rows-3 self-center gap-x-2"
+          ref={triggerRef}
+          className="flex gap-6 mt-3 justify-between px-6 cursor-pointer"
         >
-          {Array.from({ length: 9 }).map((_, index) => (
-            <span key={index} className="text-[6px]">
-              •
-            </span>
-          ))}
+          <p className="font-normal 4xl:text-[24px]">Explore events</p>
+          <div
+            ref={gridRef}
+            className="grid grid-cols-3 grid-rows-3 self-center gap-x-2"
+          >
+            {Array.from({ length: 9 }).map((_, index) => (
+              <span key={index} className="text-[6px] 4xl:text-[8px]">
+                •
+              </span>
+            ))}
+          </div>
         </div>
-      </div>
+      </Link>
     </div>
   );
 };

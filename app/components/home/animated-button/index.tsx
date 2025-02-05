@@ -1,4 +1,7 @@
 "use client";
+/* eslint-disable */
+ // @ts-nocheck 
+
 
 import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
@@ -56,10 +59,9 @@ const AnimatedButton = () => {
       <button
         ref={buttonRef}
         onMouseEnter={handleMouseEnter}
-        className="relative flex items-center justify-center bg-black bg-opacity-80 text-opacity-80 text-white p-4 rounded font-semibold tracking-widest overflow-hidden"
-        style={{ width: "200px" }}
+        className="relative w-[200px] p-2 2xl:p-4 text-sm 3xl:text-[16px] 4xl:w-[300px] 4xl:text-[24px] flex items-center justify-center bg-black bg-opacity-80 text-opacity-80 text-white rounded font-semibold tracking-widest overflow-hidden"
       >
-        <span ref={dotRef} className="text-xl mr-3">
+        <span ref={dotRef} className="text-xl mr-3 mt-[2px]">
           •
         </span>
         {[

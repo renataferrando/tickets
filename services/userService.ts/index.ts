@@ -1,4 +1,5 @@
 import { apiService } from "../apiService";
+import { ProfileType } from "@/app/types/profile";
 
 export const usersService = apiService.injectEndpoints({
   endpoints: (builder) => ({
@@ -24,7 +25,7 @@ export const usersService = apiService.injectEndpoints({
         }
       },
     }),
-    getProfile: builder.query<unknown, unknown>({
+    getProfile: builder.query<ProfileType, unknown>({
       query: () => {
         return {
           url: "/profile",

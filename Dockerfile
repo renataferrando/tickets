@@ -10,11 +10,16 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+RUN npm install sharp
+
 # Copy all files to the working directory
 COPY . .
 
+
+RUN npx prisma generate
 # Run the Next.js build command (this will generate the .next folder)
 RUN npm run build
+
 
 # Step 2: Production Stage
 FROM node:22-alpine AS production
@@ -25,11 +30,15 @@ WORKDIR /app
 # Copy necessary files from the build stage
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
+
 COPY --from=builder /app/node_modules ./node_modules
 COPY prisma ./prisma/
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+
 
 # Expose port 3000
+
 EXPOSE 3000
 
 # Start the Next.js app in production mode

@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -12,7 +11,7 @@
   :root {
     --background: #000023;
     --foreground: #ededed;
-    --terbg: linear-gradient(
+    --linearbg: linear-gradient(
       to right top,
       #1b2978,
       #00509b,
@@ -26,9 +25,11 @@
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  background-image: var(--terbg);
   font-family: "Neo Sans Pro", sans-serif;
+  
+}
+.font-proto-sans {
+  font-family: var(--font-proto-sans);
 }
 
 @layer utilities {
@@ -36,3 +37,25 @@ body {
     text-wrap: balance;
   }
 }
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+textarea,
+input:focus-visible, select {
+  outline: none;
+}
+
+.MuiOutlinedInput-root > .Mui-focused, .MuiOutlinedInput-notchedOutline {
+  border: none;
+}
+
+.MuiInputBase-root {
+  border: solid 1px #d1d5db;
+  font-size: 14px;
+}
+

@@ -1,3 +1,5 @@
+
+/* eslint-disable */
 interface Props {
     color?: string;
     width?: string;

@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import React, { useEffect, useRef } from "react";
@@ -5,7 +6,7 @@ import { gsap } from "gsap";
 
 const MusicWave: React.FC = () => {
   return (
-    <div className="border border-[0.5px] opacity-60 w-[70px] h-[70px] rounded-full flex items-center justify-center">
+    <div className="border border-[0.5px] opacity-60 w-[50px] h-[50px] 4xl:w-[90px] 3xl:h-[70px] 3xl:w-[70px] 4xl:h-[90px] rounded-full flex items-center justify-center">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="32"

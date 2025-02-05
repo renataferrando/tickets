@@ -2,13 +2,7 @@
 
 
 import axios from "axios";
-// import { getAccessToken, getSession } from "@auth0/nextjs-auth0";
-
-
-// import globalRouter from "../globalRouter";
-// import { getToken } from "../security";
-import { getToken } from "@/helpers/security";
-// const BASE_URL = import.meta.env.VITE_APP_API_URL;
+import { getToken } from "@/app/helpers/security";
 
 const axiosClient = axios.create({
   timeout: 10000,
