@@ -8,7 +8,6 @@ export const GET = async function GET(req: any) {
   const { searchParams } = new URL(req.url);
 
   const name = searchParams.get("namePrefix");
-  console.log("nam,eee", name)
   try {
     const response = await axios.get(
       `https://wft-geo-db.p.rapidapi.com/v1/geo/cities?namePrefix=${name}`,

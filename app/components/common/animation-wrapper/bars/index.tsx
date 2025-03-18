@@ -1,12 +1,16 @@
-"use client"
+"use client";
 
-import { animatePageIn } from "../../../utils/pageAnimation"
-import { useEffect } from "react"
+import { animatePageIn } from "./pageAnimation";
+import { useEffect } from "react";
 
-export default function PageAnimationWrapper({ children }: { children: React.ReactNode }) {
+export default function PageAnimationWrapper({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   useEffect(() => {
-    animatePageIn()
-  }, [])
+    animatePageIn();
+  }, []);
   return (
     <div>
       <div
@@ -27,5 +31,5 @@ export default function PageAnimationWrapper({ children }: { children: React.Rea
       />
       {children}
     </div>
-  )
+  );
 }

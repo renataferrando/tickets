@@ -7,13 +7,14 @@ interface Props {
 }
 
 const Page = ({ children, className, navbar = false }: Props) => {
-  const classes = classNames(className, "min-h-[100vh]");
+  const classes = classNames(
+    className,
+    "m-[0_auto] lg:max-w-[90rem] h-[100vh]"
+  );
   return (
     <div className={classes}>
-      <div className="m-[0_auto] lg:max-w-[90rem] h-full">
-        {navbar && <>{navbar}</>}
-        {children}
-      </div>
+      {navbar && <>{navbar}</>}
+      {children}
     </div>
   );
 };

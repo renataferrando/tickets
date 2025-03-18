@@ -1,6 +1,3 @@
-
-
-
 import axios from "axios";
 import { getToken } from "@/app/helpers/security";
 
@@ -16,7 +13,7 @@ const axiosClient = axios.create({
 
 axiosClient.interceptors.request.use(
   async (config) => {
-  const token = await getToken.getAccessTokenSilently()();
+    const token = await getToken.getAccessTokenSilently()();
     return {
       ...config,
       headers: { ...config.headers, Authorization: `Bearer ${token}` },

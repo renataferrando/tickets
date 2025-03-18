@@ -1,4 +1,3 @@
-
 import { useRef, useEffect } from "react";
 import { Box } from "@mui/material";
 import { useGetProfileQuery } from "@/services/userService.ts";
@@ -11,7 +10,7 @@ import NavItems from "./nav-items";
 const Sidebar = () => {
   const menu = useRef(null);
   const menuBtn = useRef(null);
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, user } = useAuth0();
 
   const { data: profile, isLoading } = useGetProfileQuery(null);
 
@@ -77,7 +76,9 @@ const Sidebar = () => {
                   <p className="text-sm 4xl:text-[24px]">
                     {getFirstLetter(name || nickname?.toUpperCase() || "")}
                   </p>
-                  <p className="text-sm 4xl:text-[24px]">{getFirstLetter(lastName || "")}</p>
+                  <p className="text-sm 4xl:text-[24px]">
+                    {getFirstLetter(lastName || "")}
+                  </p>
                 </div>
               </Box>
               <div
@@ -99,7 +100,9 @@ const Sidebar = () => {
         </>
       ) : (
         <button className="mt-4">
-          <a className="4xl:text-[24px]" href="/api/auth/login">Log in</a>
+          <a className="4xl:text-[24px]" href="/api/auth/login">
+            Log in
+          </a>
         </button>
       )}
     </>

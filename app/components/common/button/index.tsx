@@ -15,6 +15,7 @@ interface Props {
   className?: string;
   underline?: boolean;
   isDisabled?: boolean;
+  size?: "sm" | "md" | "lg";
   type?: "button" | "submit" | "reset";
   [x: string]: any;
 }
@@ -39,14 +40,14 @@ function Button(props: Props) {
     ...r
   } = props;
 
-  const classes = classNames(className, "flex justify-center hover:opacity-80 w-full font-medium", {
+  const classes = classNames(className, "flex justify-center hover:opacity-80 w-full cursor-pointer", {
     "bg-black text-white ": primary,
     "border-solid border border-black text-black": secondary,
     "rounded-full": fullRounded,
     "rounded-md": roundedNormal,
     "text-xs py-1 px-2": xs,
-    "text-sm p-2": sm,
-    "text-xl p-2": lg,
+    "text-sm py-2 px-4": sm,
+    "text-md py-1 px-4 4xl:text-3xl 4xl:px-6 4xl:py-3": lg,
     "opacity-20": isDisabled
   });
 

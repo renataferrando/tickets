@@ -1,7 +1,3 @@
-
-/* eslint-disable */
- // @ts-nocheck 
-
 "use client";
 import { Auth0Provider } from "@auth0/auth0-react";
 import Router from "next/router";
@@ -17,12 +13,11 @@ export const Auth0 = ({ children }) => {
     return null;
   }
 
-   const onRedirectCallback = () => {
-    const redirectTarget = '/';
-    console.log('Redirecting to:', redirectTarget); // Debugging
+  const onRedirectCallback = () => {
+    const redirectTarget = "/";
+    console.log("Redirecting to:", redirectTarget); // Debugging
     Router.replace(redirectTarget);
-   };
-  
+  };
 
   return (
     <Auth0Provider
@@ -33,8 +28,7 @@ export const Auth0 = ({ children }) => {
         redirect_uri: redirectUri,
         audience: audience,
         prompt: "consent",
-        scope: scope
-
+        scope: scope,
       }}
     >
       {children}

@@ -15,7 +15,6 @@ import { useAuthHandler } from "@/app/hooks/useAuthHandler";
 import Sidebar from "../components/common/sidebar";
 
 const Home = () => {
-  const { logout } = useAuth0();
   const ticketRef = useRef(null);
   const {
     isAuthenticated,
@@ -37,7 +36,7 @@ const Home = () => {
 
   const PageContent = () => {
     return (
-      <Page className={"w-full pb-10 px-10 bg-hero-pattern overflow-hidden"}>
+      <Page className={"w-full pb-10 px-10 overflow-hidden w-full"}>
         <div className="grid grid-rows-[auto_1fr] h-[100vh]">
           <div className="w-full flex justify-between items-center pt-6">
             <Menu />
@@ -58,13 +57,14 @@ const Home = () => {
               <div className="flex justify-start items-center">
                 <div
                   ref={ticketRef}
-                  className="w-[400px] 3xl:w-[600px] 4xl:w-[800px] h-auto"
+                  className="w-[500px] 3xl:w-[600px] 4xl:w-[800px] h-auto"
                   style={{
                     filter: "drop-shadow(0px 10px 20px rgba(0, 0, 0, 0.3))",
                     opacity: 0,
                   }}
                 >
                   <img
+                  
                     src={ticketImg.src}
                     alt="Event Ticket"
                     className="w-full h-full object-cover"

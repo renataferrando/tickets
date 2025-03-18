@@ -1,9 +1,14 @@
 import { apiService } from "../apiService";
 import { ProfileType } from "@/app/types/profile";
+import { EventType } from "@/app/types/event";
+
+export interface EventsResponse {
+  events: EventType[];
+}
 
 export const eventService = apiService.injectEndpoints({
   endpoints: (builder) => ({
-    getEvents: builder.query<unknown, unknown>({
+    getEvents: builder.query<EventsResponse, null>({
       query: () => {
         return {
           url: "/events",

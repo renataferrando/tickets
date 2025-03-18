@@ -91,7 +91,7 @@ export default function UploadEventForm({ user }: ProfileType) {
     }
   };
 
-  console.log(user)
+
   return (
     <>
       {!isLoading ? (

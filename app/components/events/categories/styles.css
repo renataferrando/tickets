@@ -1,0 +1,7 @@
+.char {
+  transform: translateY(-150px);
+  transition: transform 0.5s;
+}
+/* .text {
+   clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%)
+} */

@@ -26,7 +26,9 @@
 body {
   color: var(--foreground);
   font-family: "Neo Sans Pro", sans-serif;
-  
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 .font-proto-sans {
   font-family: var(--font-proto-sans);
@@ -42,6 +44,7 @@ body {
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+    
   }
 }
 

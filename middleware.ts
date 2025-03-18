@@ -9,9 +9,9 @@ export default async function middleware(req: NextRequest) {
   const url = req.nextUrl.pathname;
 
   const protectedRoutes = {
-    "/my-events": ["Admin"], 
-    "/events": ["Admin", "User"], 
-    "/add-event": ["Admin"]
+    "/my-events": ["Admin"],
+    "/events": ["Admin", "User"],
+    "/add-event": ["Admin"],
   };
 
   const isProtectedRoute = Object.keys(protectedRoutes).some((route) =>

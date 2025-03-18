@@ -8,7 +8,7 @@ export const locationService = apiService.injectEndpoints({
       query: (args) => {
 
         const params = URLSearchParamsConstructor(args);
-        console.log(args)
+
         return {
           url: "/location",
           method: "get",
