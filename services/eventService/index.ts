@@ -30,12 +30,34 @@ export const eventService = apiService.injectEndpoints({
         }
       },
     }),
+    getEventsByCategory: builder.query<EventsResponse, string>({
+      query: (id: string) => {
+        return {
+          url: `/categories/${id}/events`,
+          method: "get",
+        };
+      },
+      //   providesTags: ["UsersList"],
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } catch (err: any) {
+          const { error } = err;
+          if (
+            error.status !== 500 &&
+            error.status !== 404 &&
+            error.status !== 403
+          ) {
+          }
+        }
+      },
+    }),
     addNewEvent: builder.mutation<ProfileType, unknown>({
       query: (body) => {
         return {
           url: "/events",
           method: "POST",
-          data: body
+          data: body,
         };
       },
       //   providesTags: ["UsersList"],
@@ -55,4 +77,8 @@ export const eventService = apiService.injectEndpoints({
     }),
   }),
 });
-export const { useGetEventsQuery, useAddNewEventMutation } = eventService;
+export const {
+  useGetEventsQuery,
+  useAddNewEventMutation,
+  useGetEventsByCategoryQuery,
+} = eventService;

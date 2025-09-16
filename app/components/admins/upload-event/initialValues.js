@@ -12,5 +12,5 @@ export const eventInitialValues = {
   imageUrl: null,
   description: "",
   location: "",
-  category: "",
+  categoryId: "",
 };

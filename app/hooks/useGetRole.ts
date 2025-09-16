@@ -1,5 +1,4 @@
-
-import { useGetProfileQuery } from "@/services/userService.ts";
+import { useGetProfileQuery } from "@/services/userService";
 
 const useGetRole = () => {
   const { data: user } = useGetProfileQuery(null);

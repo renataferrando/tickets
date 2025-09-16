@@ -2,6 +2,7 @@ import gsap from "gsap";
 import { RefObject } from "react";
 
 const homeAnimations = (ticketRef: RefObject<HTMLDivElement>) => {
+  if (!ticketRef.current) return () => {};
   const ctx = gsap.context(() => {
     // Start the animation after a 3-second delay
     gsap.fromTo(
@@ -25,7 +26,7 @@ const homeAnimations = (ticketRef: RefObject<HTMLDivElement>) => {
 
     // Smooth floating animation after showing up
     gsap.to(ticketRef.current, {
-      y: 10, // Float up and down
+      y: 0.4, // Float up and down
       duration: 1.5,
       yoyo: true,
       repeat: -1, // Infinite loop

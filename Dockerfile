@@ -35,7 +35,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY prisma ./prisma/
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-
+COPY --from=builder /app/app/fonts ./app/fonts
 
 # Expose port 3000
 

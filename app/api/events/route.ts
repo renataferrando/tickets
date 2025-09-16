@@ -66,42 +66,83 @@ export const GET = withApiAuthRequired(async function GET(req: NextRequest) {
 //   }
 // }
 
-export async function POST(req: NextRequest) {
+export const POST = withApiAuthRequired(async function POST(req: NextRequest) {
   try {
+    const session = await getSession(req, new NextResponse());
+    if (!session) {
+      const loginUrl = new URL("/api/auth/login", req.url);
+      return NextResponse.redirect(loginUrl);
+    }
+
     const body = await req.json();
+    const {
+      tickets = [],
+      organizerId,
+      categoryId,
+      category, // optional fallback by name
+      name,
+      date,
+      location,
+      description,
+      imageUrl,
+    } = body;
 
-    // Insert events first (without tickets)
-    const events = body.map(({ tickets, ...eventData }) => eventData); // Remove tickets
-    const createdEvents = await prisma.event.createMany({
-      data: events,
-      skipDuplicates: true,
-    });
+    if (!name || !date || !location || !description || !organizerId) {
+      return NextResponse.json(
+        { message: "Missing required fields" },
+        { status: 400 }
+      );
+    }
 
-    // Fetch event IDs of the newly inserted events
-    const insertedEvents = await prisma.event.findMany({
-      where: { name: { in: events.map((e) => e.name) } }, // Assuming `name` is unique
-    });
+    let resolvedCategoryId = categoryId;
+    if (!resolvedCategoryId && category) {
+      const found = await prisma.category.findFirst({
+        where: { name: category },
+      });
+      if (!found) {
+        return NextResponse.json(
+          { message: "Category not found" },
+          { status: 400 }
+        );
+      }
+      resolvedCategoryId = found.id;
+    }
+    if (!resolvedCategoryId) {
+      return NextResponse.json(
+        { message: "categoryId is required" },
+        { status: 400 }
+      );
+    }
 
-    // Insert tickets
-    const ticketsData = body.flatMap((event) => {
-      const eventId = insertedEvents.find((e) => e.name === event.name)?.id;
-      if (!eventId) return [];
-      return event.tickets.create.map((ticket) => ({
-        ...ticket,
-        eventId,
-      }));
-    });
+    const normalizedTickets = Array.isArray(tickets)
+      ? tickets.map((t: any) => ({
+          price: Number(t.price),
+          type: String(t.type),
+          status: String(t.status ?? "available"),
+          stock: Number(t.stock ?? 0),
+          description: t.description ? String(t.description) : null,
+        }))
+      : [];
 
-    await prisma.ticket.createMany({
-      data: ticketsData,
-      skipDuplicates: true,
+    const created = await prisma.event.create({
+      data: {
+        name,
+        date: new Date(date),
+        location,
+        description,
+        imageUrl,
+        organizer: { connect: { id: Number(organizerId) } },
+        category: { connect: { id: Number(resolvedCategoryId) } },
+        tickets: { create: normalizedTickets },
+      },
+      include: { organizer: true, category: true, tickets: true },
     });
 
     return NextResponse.json(
-      { message: "Events and tickets created successfully" },
+      { message: "Event created", event: created },
       { status: 201 }
     );
-  } catch (error) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+  } catch (err: any) {
+    return NextResponse.json({ message: err.message }, { status: 500 });
   }
-}
+});

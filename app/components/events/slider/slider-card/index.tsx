@@ -1,31 +1,41 @@
 import Image from "next/image";
 
 import { Divider } from "@mui/material";
-import { formatDate } from "@/app/utils/string-format/formatDate";
 import Button from "../../../common/button";
-
-interface Event {
-  id: string;
-  name: string;
-  date: string;
-  location: string;
-  imageUrl?: string;
-}
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import { EventType } from "@/app/types/event";
+import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
+import moment from "moment";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  event: Event;
+  event: EventType;
+  setModalOpen?: (open: boolean) => void;
+  setEvent?: (event: EventType) => void;
 }
+type ClassInput = string | false | null | undefined | Record<string, boolean>;
+const cn = (...x: ClassInput[]) => twMerge(clsx(x));
 
-const SliderCard = ({ event, ...rest }: Props) => {
+const SliderCard = ({ event, setModalOpen, setEvent, ...rest }: Props) => {
+  const cardClass = cn(
+    // layout
+    "item grid grid-rows-[68%_30%] gap-2 flex-none group",
+    // size
+    "w-[300px] h-[450px] 2xl:w-[380px] 2xl:h-[550px] 4xl:w-[500px] 4xl:h-[700px]",
+    // visuals
+    "rounded-lg border border-white/20",
+    // bg (kept as arbitrary value)
+    "bg-[oklch(20.8%_0.042_265.755_/_0.3)]",
+
+    rest.className
+  );
+
+  const date = moment.utc(event.date).format("MMMM Do YYYY");
   return (
-    <div
-      key={event.id} 
-      className="item z-10 bg-slate-400 bg-opacity-30 w-[320px] h-[450px] 4xl:w-[500px] 4xl:h-[700px] flex-none border border-opacity-20 border-white-200 rounded-lg grid grid-rows-[75%_25%] gap-2 group"
-      {...rest}
-    >
+    <div key={event.id} className={cardClass} {...rest}>
       <Image
         className="image-event rounded-t-lg"
-        src={event.imageUrl || ""}
+        src={event.imageUrl || "/"}
         width={0}
         height={0}
         sizes="100vw"
@@ -37,16 +47,30 @@ const SliderCard = ({ event, ...rest }: Props) => {
         }}
         alt="Event's image"
       />
-      <div className="px-4 py-2">
+      <div className="p-2 2xl:p-4 flex flex-col justify-between">
         <div className="flex items-center w-full justify-between">
-          <h2 className="text-xl 4xl:text-4xl font-semibold mb-2 whitespace-nowrap truncate">{event.name}</h2>
-          <p className="font-proto-sans text-xs 4xl:text-xl">{formatDate(event.date)}</p>
+          <h2 className="text-lg 2xl:text-xl 4xl:text-4xl font-semibold mb-2 max-w-[50%] line-clamp-2 overflow-hidden h-[3.2rem] 2xl:h-[3.6rem] 4xl:h-[5rem]">
+            {event.name}
+          </h2>
+          <p className="font-proto-sans text-xs 4xl:text-xl">{date}</p>
         </div>
         <Divider className="mb-4 bg-white opacity-20" />
-        <div className="grid grid-cols-[50%_50%] items-center w-full justify-between">
-          <div className="flex items-center gap-2">
-            <p className="text-xs 4xl:text-2xl">{event.location}</p>
+        <div className="grid grid-cols-[45%_10%_45%] items-center w-full justify-between h-10 2xl:h-12 4xl:h-16">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <p className="text-xs 4xl:text-2xl truncate">{event.location}</p>
           </div>
+          <KeyboardArrowDownRoundedIcon
+            sx={{
+              fontVariationSettings:
+                "'FILL' 0, 'wght' 100, 'GRAD' 0, 'opsz' 24",
+              fontSize: 16,
+            }}
+            className="cursor-pointer"
+            onClick={() => {
+              setModalOpen?.(true);
+              setEvent?.(event);
+            }}
+          />
           <Button
             onClick={() => console.log("hola")}
             id="button"

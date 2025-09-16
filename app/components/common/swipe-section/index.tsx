@@ -1,17 +1,17 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
-import ScrollTrigger from "gsap-trial/ScrollTrigger";
+// import ScrollTrigger from "gsap-trial/ScrollTrigger";
 import ScrollToPlugin from "gsap-trial/ScrollToPlugin";
 import Slider from "../../events/slider";
 import { useGSAP } from "@gsap/react";
 
-const SwipeSection = ({ text }) => {
+const SwipeSection = ({ text }: { text: string }) => {
   const sectionRef = useRef(null);
-  const panelsRef = useRef([]);
-  const textRefs = useRef([]);
-  const currentIndex = useRef(0);
+  // const panelsRef = useRef([]);
+  // const textRefs = useRef([]);
+  // const currentIndex = useRef(0);
   const slidersl = useRef(null);
   gsap.registerPlugin(ScrollToPlugin);
   useGSAP(
@@ -50,7 +50,7 @@ const SwipeSection = ({ text }) => {
         className="swipe-section h-[100vh] px-20 flex items-center justify-center bg-sky-900 relative overflow-hidden"
       >
         <section className="panel absolute">
-          <Slider />
+          <Slider setScrollActive={() => {}} />
         </section>
       </div>
     </div>

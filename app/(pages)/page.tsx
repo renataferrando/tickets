@@ -1,83 +1,54 @@
 /* eslint-disable @next/next/no-img-element */
-"use client";
 
-import { useRef, useEffect } from "react";
 import Page from "../components/common/page";
-import ticketImg from "../assets/transparent_ticket-removebg.png";
 import AnimatedButton from "../components/home/animated-button";
 import Menu from "../components/home/menu";
 import MusicWave from "../components/home/music-wave";
-import homeAnimations from "../animations/home/animations";
-import { useAuth0 } from "@auth0/auth0-react";
-import { getToken } from "@/app/helpers/security";
-import LinearLoading from "../components/common/linear-loading/LinearLoading";
-import { useAuthHandler } from "@/app/hooks/useAuthHandler";
 import Sidebar from "../components/common/sidebar";
+import TicketImage from "../components/home/ticket-image";
+import Navbar from "../components/common/navbar";
+import Link from "next/link";
 
 const Home = () => {
-  const ticketRef = useRef(null);
-  const {
-    isAuthenticated,
-    isLoading: authLoading,
-    getAccessTokenSilently,
-  } = useAuth0();
-  const { handleSilentAuthError } = useAuthHandler();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      getToken.setAccessTokenSilently(getAccessTokenSilently);
-    }
-  }, [isAuthenticated, getAccessTokenSilently]);
-
-  useEffect(() => {
-    homeAnimations(ticketRef);
-    handleSilentAuthError();
-  }, [authLoading, isAuthenticated, handleSilentAuthError]);
-
   const PageContent = () => {
     return (
-      <Page className={"w-full pb-10 px-10 overflow-hidden w-full"}>
-        <div className="grid grid-rows-[auto_1fr] h-[100vh]">
-          <div className="w-full flex justify-between items-center pt-6">
-            <Menu />
-            <Sidebar />
-          </div>
+      <Page
+        className={
+          "overflow-hidden h-[100vh] flex flex-col justify-end items-center"
+        }
+      >
+        <Navbar
+          left={<Menu text="Explore events" link="/events" />}
+          right={<Sidebar />}
+        />
+        <div className="grid grid-rows-[auto_1fr]">
           <div className="flex flex-col h-full justify-center gap-4">
             <div className="grid grid-cols-[1fr_1fr] items-center px-24">
               <div className="flex flex-col items-center">
-                <div>
-                  <p className="text-[6em] 3xl:text-[7em] 4xl:text-[12em] font-semibold">
+                <div className="flex flex-col items-center">
+                  <p className="text-[10em] 3xl:text-[12em] 4xl:text-[14em] font-semibold leading-none">
                     FO
                     <br />
                     MO?
                   </p>
-                  <AnimatedButton />
+                  <Link href="/events" className="w-full">
+                    <AnimatedButton />
+                  </Link>
                 </div>
               </div>
               <div className="flex justify-start items-center">
-                <div
-                  ref={ticketRef}
-                  className="w-[500px] 3xl:w-[600px] 4xl:w-[800px] h-auto"
-                  style={{
-                    filter: "drop-shadow(0px 10px 20px rgba(0, 0, 0, 0.3))",
-                    opacity: 0,
-                  }}
-                >
-                  <img
-                  
-                    src={ticketImg.src}
-                    alt="Event Ticket"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                {/* <div className="w-[600px] 3xl:w-[600px] 4xl:w-[900px] h-auto">
+                  h{" "}
+                </div> */}
+                <TicketImage />
               </div>
             </div>
-            <div className=" flex w-full justify-between items-center">
+            <div className="px-20 pb-10 flex w-full justify-between items-center">
               <MusicWave />
               <div className="max-w-[400px]">
                 <p className="font-normal text-sm 2xl:text-[16px] 4xl:text-[24px] 4xl:leading-9">
                   Don&lsquo;t miss out! Dive into unforgettable moments and
-                  unique experiences with our events...
+                  unique experiences!
                 </p>
               </div>
             </div>
@@ -89,11 +60,11 @@ const Home = () => {
 
   return (
     <>
-      {!authLoading ? (
-        <PageContent />
-      ) : (
+      {/* {!authLoading ? ( */}
+      <PageContent />
+      {/* ) : (
         <LinearLoading className={"bg-hero-pattern"} />
-      )}
+      )} */}
     </>
   );
 };

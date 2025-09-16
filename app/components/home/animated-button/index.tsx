@@ -1,12 +1,11 @@
 "use client";
 /* eslint-disable */
- // @ts-nocheck 
-
+// @ts-nocheck
 
 import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
 
-const AnimatedButton = () => {
+const AnimatedButton = ({ onClick }: { onClick?: () => void }) => {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const dotRef = useRef<HTMLSpanElement | null>(null);
   const letterRefs = useRef<HTMLSpanElement[]>([]); // Array of refs for each letter
@@ -55,11 +54,12 @@ const AnimatedButton = () => {
   };
 
   return (
-    <div>
+    <div className="w-full">
       <button
         ref={buttonRef}
+        onClick={onClick}
         onMouseEnter={handleMouseEnter}
-        className="relative w-[200px] p-2 2xl:p-4 text-sm 3xl:text-[16px] 4xl:w-[300px] 4xl:text-[24px] flex items-center justify-center bg-black bg-opacity-80 text-opacity-80 text-white rounded font-semibold tracking-widest overflow-hidden"
+        className="relative w-[80%] p-2 2xl:p-4 text-sm 3xl:text-[16px] 4xl:w-[300px] 4xl:text-[24px] flex items-center justify-center bg-black bg-opacity-80 text-opacity-80 text-white rounded font-semibold tracking-widest overflow-hidden"
       >
         <span ref={dotRef} className="text-xl mr-3 mt-[2px]">
           •

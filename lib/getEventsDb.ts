@@ -1,6 +1,5 @@
-
 /* eslint-disable */
- // @ts-nocheck 
+// @ts-nocheck
 
 import prisma from "./db";
 
@@ -78,6 +77,56 @@ export async function getEvents({
 
   return {
     events,
+    pagination: {
+      currentPage: page,
+      totalPages,
+      totalCount,
+      limit,
+    },
+  };
+}
+
+export async function getEventsByCategory({
+  categoryId,
+  sortBy = "date",
+  sortOrder = "asc",
+  page = 1,
+  limit = 10,
+}: {
+  categoryId: number;
+  sortBy?: string;
+  sortOrder?: string;
+  page?: number;
+  limit?: number;
+}) {
+  const skip = (page - 1) * limit;
+
+  const where = {
+    categoryId: categoryId,
+  } as const;
+
+  const [events, totalCount, category] = await Promise.all([
+    prisma.event.findMany({
+      where,
+      include: {
+        tickets: true,
+      },
+      skip,
+      take: limit,
+      orderBy: { [sortBy]: sortOrder },
+    }),
+    prisma.event.count({ where }),
+    prisma.category.findUnique({
+      where: { id: categoryId },
+      select: { id: true, name: true },
+    }),
+  ]);
+
+  const totalPages = Math.ceil(totalCount / limit);
+
+  return {
+    events,
+    category,
     pagination: {
       currentPage: page,
       totalPages,

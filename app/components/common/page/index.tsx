@@ -1,21 +1,35 @@
-import classNames from "classnames";
+"use client";
+// import classNames from "classnames";
+import { motion } from "framer-motion";
 
 interface Props {
   children: React.ReactNode;
   className?: string;
-  navbar?: React.ReactNode | false;
+  ref?: React.RefObject<HTMLDivElement> | null;
+  r?: React.RefObject<HTMLDivElement> | null;
+  id?: string;
 }
 
-const Page = ({ children, className, navbar = false }: Props) => {
-  const classes = classNames(
-    className,
-    "m-[0_auto] lg:max-w-[90rem] h-[100vh]"
-  );
+const Page = ({
+  children,
+  className,
+
+  ref,
+  id,
+  ...r
+}: Props) => {
   return (
-    <div className={classes}>
-      {navbar && <>{navbar}</>}
-      {children}
-    </div>
+    <motion.div
+      className={className}
+      id={id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      {...r}
+    >
+      <div ref={ref}>{children}</div>
+    </motion.div>
   );
 };
 

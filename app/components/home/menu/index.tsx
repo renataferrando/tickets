@@ -2,11 +2,11 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-
 import { gsap } from "gsap";
-import Link from "next/link";
 
-const Menu: React.FC = () => {
+type MenuProps = { text: string; link: string };
+
+const Menu: React.FC<MenuProps> = ({ text, link }) => {
   const gridRef = useRef<HTMLDivElement | null>(null);
   const cornerRefs = useRef<HTMLSpanElement[]>([]);
   const triggerRef = useRef<HTMLDivElement | null>(null);
@@ -112,7 +112,7 @@ const Menu: React.FC = () => {
 
   return (
     <div className="flex flex-col max-w-[45%] gap-4">
-      <Link href="/events">
+      <a href={link}>
         <hr
           ref={hrRef}
           className="border-none h-[0.5px] bg-white  color-white opacity-70"
@@ -121,7 +121,7 @@ const Menu: React.FC = () => {
           ref={triggerRef}
           className="flex gap-6 mt-3 justify-between px-6 cursor-pointer"
         >
-          <p className="font-normal 4xl:text-[24px]">Explore events</p>
+          <p className="font-normal 4xl:text-[24px]">{text}</p>
           <div
             ref={gridRef}
             className="grid grid-cols-3 grid-rows-3 self-center gap-x-2"
@@ -133,7 +133,7 @@ const Menu: React.FC = () => {
             ))}
           </div>
         </div>
-      </Link>
+      </a>
     </div>
   );
 };

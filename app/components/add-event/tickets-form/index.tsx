@@ -52,7 +52,7 @@ function TicketsForm(props: any) {
                   <TicketSlice index={index} />
                 </div>
               ))}
-              {!Array.isArray(errorLang) && (
+              {/* {!Array.isArray(errorLang) && (
                 <ErrorMessage
                   component={FormHelperText}
                   name="tickets"
@@ -62,7 +62,7 @@ function TicketsForm(props: any) {
                     </p>
                   )}
                 />
-              )}
+              )} */}
               <Button
                 type="button"
                 className="text-primary text-xs self-start my-6"

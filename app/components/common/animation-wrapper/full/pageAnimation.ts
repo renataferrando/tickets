@@ -1,9 +1,9 @@
 import gsap from "gsap";
-import SplitType from "split-type";
+// import SplitType from "split-type";
 
 export const animatePageIn = () => {
   document.body.style.overflow = "hidden";
-  const text = new SplitType(".text");
+  // const text = new SplitType(".text");
 
   const tl = gsap.timeline({
     onComplete: () => {

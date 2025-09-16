@@ -1,38 +1,28 @@
-"use client";
-import { useState } from "react";
-import Slider from "@/app/components/events/slider";
-import FullAnimationWrapper from "@/app/components/common/animation-wrapper/full";
+import Menu from "@/app/components/home/menu";
 import { ReactLenis } from "lenis/react";
-import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
-import { eventsPageAnimations } from "./eventsPageAnimations";
-import { useGSAP } from "@gsap/react";
-import Categories from "@/app/components/events/categories";
+import CategoriesV2 from "@/app/components/events/categoriesv2";
+import Page from "@/app/components/common/page";
+import { getEvents } from "@/lib/getEventsDb";
+import Navbar from "@/app/components/common/navbar";
 
-gsap.registerPlugin(ScrollTrigger);
+import SliderSection from "@/app/components/events/slider-section";
 
-export default function EventsPage() {
-  const [scrollActive, setScrollActive] = useState(false);
-
-  useGSAP(() => {
-    eventsPageAnimations();
-  }, []);
-
+export default async function EventsPage() {
+  const initialEvents = await getEvents({
+    page: 1,
+    limit: 20,
+    sortBy: "date",
+    sortOrder: "asc",
+  });
   return (
-    // <ReactLenis root options={{ smoothWheel: true }}>
-    <div className="wrapper overflow-hidden">
-      <FullAnimationWrapper>
-        {/* Slider Section */}
-        <div
-          id="section-1"
-          data-bgcolor="bg-sky-800"
-          className="section flex h-[100vh] px-20 items-center overflow-hidden"
-        >
-          <Slider setScrollActive={setScrollActive} />
-        </div>
-        <Categories scrollActive={scrollActive} />
-      </FullAnimationWrapper>
-    </div>
-    // </ReactLenis>
+    <Page className="overflow-hidden" id="events-page">
+      <ReactLenis root>
+        <Navbar left={<Menu text="Home" link="/" />} right={<></>} />
+
+        <SliderSection initialEvents={initialEvents} />
+        <div className="h-[15vh]" />
+        <CategoriesV2 />
+      </ReactLenis>
+    </Page>
   );
 }

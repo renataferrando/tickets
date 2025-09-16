@@ -3,6 +3,7 @@ generator client {
   binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
 }
 
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -29,7 +30,8 @@ model Event {
   date        DateTime
   location    String
   description String
-  category    Category
+  categoryId  Int  // Foreign key to Category
+  category    Category @relation(fields: [categoryId], references: [id])
   imageUrl    String?
   organizerId Int
   createdAt   DateTime @default(now())
@@ -37,6 +39,7 @@ model Event {
   organizer   User     @relation(fields: [organizerId], references: [id])
   tickets     Ticket[]
 }
+
 
 model Ticket {
   id          Int           @id @default(autoincrement())
@@ -82,11 +85,12 @@ model Payment {
   order       Orders   @relation(fields: [orderId], references: [id])
 }
 
-enum Category {
-  LIVE_MUSIC
-  PARTY
-  SPORTS
-  EDUCATION
-  ENTERTAINMENT
-  HEALTH
+model Category {
+  id        Int     @id @default(autoincrement()) // Unique ID for each category
+  name      String  @unique
+  events    Event[] // Relation with Event model
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+

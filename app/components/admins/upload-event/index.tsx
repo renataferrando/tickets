@@ -1,46 +1,48 @@
 /* eslint-disable */
-// @ts-nocheck 
+// @ts-nocheck
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Box, Divider } from "@mui/material";
 import AutocompleteSearch from "../../add-event/search-location";
 import { useGetLocationQuery } from "@/services/getCities";
 import Button from "../../common/button";
 import { eventInitialValues } from "./initialValues";
+import { schema } from "./schema";
 import { Form, Formik } from "formik";
 import FormikInput from "../../formik/formik-input";
 import FormikSelect from "../../formik/formik-select";
 import FormikDatePicker from "../../formik/formik-datepicker";
 import FormikTextarea from "../../formik/formik-textarea";
 import FormikFile from "../../formik/formik-file";
-import { useAddNewEventMutation } from "@/services/eventService.ts";
+import { useAddNewEventMutation } from "@/services/eventService";
 import { redirect } from "next/navigation";
 import LoadingSpinner from "../../common/spinner";
 import {
   KeyboardArrowDownRounded,
   KeyboardArrowUpRounded,
 } from "@mui/icons-material";
-import { ProfileType } from "@/app/types/profile";
 import TicketsForm from "../../add-event/tickets-form";
+import SimpleModal from "../../common/simple-modal";
+import { useGetCategoriesQuery } from "@/services/categoryService";
+import { Button as ButtonUI } from "../../ui/button";
+import { toast } from "sonner";
 
-const CATEGORY_LABELS = [
-  { value: "LIVE_MUSIC", label: "Live Music" },
-  { value: "PARTY", label: "Party" },
-  { value: "SPORTS", label: "Sports" },
-  { value: "ENTERTAINMENT", label: "Entertainment" },
-  { value: "EDUCATION", label: "Education" },
-  { value: "HEALTH", label: "Health" },
-];
-
-export default function UploadEventForm({ user }: ProfileType) {
+export default function UploadEventForm({ user }: any) {
   const [locationValue, setLocationValue] = useState(null);
   const [addEvent, { isLoading }] = useAddNewEventMutation();
   const [showTicketsType, setShowTicketsType] = useState(false);
+  const [ticketsOpen, setTicketsOpen] = useState(false);
 
   const { data: location } = useGetLocationQuery(
     { namePrefix: locationValue },
     { skip: !locationValue, refetchOnMountOrArgChange: true }
+  );
+  const { data: categories } = useGetCategoriesQuery(null);
+
+  const categoryOptions = useMemo(
+    () => (categories ?? []).map((c) => ({ value: c.id, label: c.name })),
+    [categories]
   );
 
   const handleImageUpload = async (file: any) => {
@@ -75,22 +77,25 @@ export default function UploadEventForm({ user }: ProfileType) {
   const handleSubmit = async (values: any) => {
     const imageUrl = await handleImageUpload(values.imageUrl);
     const payload = {
-      ...values,
+      name: values.name,
+      date: values.date,
+      location: values.location,
+      description: values.description,
       imageUrl: imageUrl,
       organizerId: user.id,
-      tickets: {
-        create: values.tickets,
-      },
+      categoryId: values.categoryId,
+      tickets: values.tickets,
     };
 
     try {
       await addEvent(payload).unwrap();
-      redirect("/my-events");
+      toast.success("Event created successfully");
+      redirect("/events");
     } catch (err) {
       console.error("Failed to save the event: ", err);
+      toast.error("Failed to create event");
     }
   };
-
 
   return (
     <>
@@ -99,47 +104,71 @@ export default function UploadEventForm({ user }: ProfileType) {
           validateOnBlur={false}
           validateOnChange={false}
           initialValues={eventInitialValues}
+          validationSchema={schema}
           onSubmit={handleSubmit}
         >
-          {({ values }) => (
+          {({ values, setFieldValue, errors }) => (
             <Form className="w-full px-10 flex flex-col gap-2 max-h-[650px] overflow-auto">
               <div>
-                <FormikInput
-                  id="event-name"
-                  name="name"
-                  label="Event name"
-                  required
-                />
+                <FormikInput id="event-name" name="name" label="Event name" />
               </div>
-              <Box
-                className="flex items-center gap-1 cursor-pointer"
-                onClick={() => setShowTicketsType(!showTicketsType)}
+              <ButtonUI
+                type="button"
+                onClick={() => setTicketsOpen(true)}
+                variant="outline"
               >
-                <p className="text-sm font-medium text-gray-700">Tickets</p>
-                {!showTicketsType ? (
-                  <KeyboardArrowDownRounded className="text-[18px] text-gray-700" />
-                ) : (
-                  <KeyboardArrowUpRounded className="text-[18px] text-gray-700" />
-                )}
-              </Box>
+                <p className="text-sm font-medium text-gray-700">
+                  Select tickets
+                </p>
+              </ButtonUI>
+              {errors?.tickets?.length > 0 && (
+                <p className="p-1 font-sans text-xs font-medium text-red-500">
+                  Complete all fields
+                </p>
+              )}
 
-              <div
-                className={`transition-height duration-300 ease-in-out ${
-                  showTicketsType
-                    ? "max-h-[900px] opacity-100"
-                    : "max-h-0 opacity-0 overflow-hidden"
-                }`}
+              <SimpleModal
+                open={ticketsOpen}
+                onClose={() => setTicketsOpen(false)}
               >
-                <TicketsForm values={values} />
-              </div>
+                <div className="p-6 max-h-[80vh] overflow-auto">
+                  <h3 className="text-lg font-semibold mb-4">Tickets</h3>
+                  <TicketsForm values={values} />
+                </div>
+                <div className="flex gap-2 p-4 justify-end">
+                  <Button
+                    type="button"
+                    onClick={() => setTicketsOpen(false)}
+                    sm
+                    primary
+                    roundedNormal
+                    text="Save"
+                  />
+
+                  <Button
+                    type="button"
+                    sm
+                    onClick={() => {
+                      setFieldValue("tickets", [
+                        { price: "", type: "", stock: "", description: "" },
+                      ]);
+                      setTicketsOpen(false);
+                    }}
+                    secondary
+                    className="w-auto"
+                    roundedNormal
+                    text="Discard"
+                  />
+                </div>
+              </SimpleModal>
 
               <Divider className="mt-2" />
               <div>
                 <FormikSelect
                   label="Event category"
                   id="event-categories"
-                  name="category"
-                  options={CATEGORY_LABELS}
+                  name="categoryId"
+                  options={categoryOptions}
                 />
               </div>
               <div>
@@ -173,7 +202,7 @@ export default function UploadEventForm({ user }: ProfileType) {
                 text="Create event"
                 primary
                 sm
-                fullRounded
+                roundedNormal
               />
             </Form>
           )}

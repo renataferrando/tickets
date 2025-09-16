@@ -1,13 +1,12 @@
 import gsap from "gsap";
-import SplitType from "split-type";
+// import SplitType from "split-type";
 
 export const eventsPageAnimations = () => {
   document.body.style.overflow = "hidden";
-  const text = new SplitType(".text");
+  // const text = new SplitType(".text");
 
   //ANIMATION WRAPPER
   const tl = gsap.timeline({
-                 
     onComplete: () => {
       document.body.style.overflow = "auto";
     },
